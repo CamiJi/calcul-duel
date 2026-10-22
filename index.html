@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#020617" />
+    <meta
+      name="description"
+      content="Le Duel des Tables — jeu de calcul mental Papa vs Champion, avec chronos différentiels réglables."
+    />
+    <title>⚡ Le Duel des Tables — Papa vs Champion</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+
+  <body class="min-h-dvh bg-slate-950 font-body text-slate-100">
+    <main class="mx-auto flex min-h-dvh max-w-5xl flex-col p-3 md:p-6">
+      <!-- ═══════════ ÉCRAN RÉGLAGES ═══════════ -->
+      <section id="screen-setup" class="flex flex-1 flex-col gap-5">
+        <header class="pt-4 text-center">
+          <h1 class="font-display text-4xl font-extrabold md:text-5xl">
+            ⚡ Le Duel des Tables
+          </h1>
+          <p class="mt-1 text-slate-400">
+            Papa vs Champion — chacun son papier, chacun son chrono.
+          </p>
+        </header>
+
+        <div class="grid flex-1 gap-4 md:grid-cols-2">
+          <!-- Joueurs -->
+          <div class="card">
+            <h2 class="label">Les joueurs</h2>
+            <label class="label" for="in-papa-name">Papa</label>
+            <input id="in-papa-name" class="field" maxlength="14" autocomplete="off" />
+            <label class="label mt-3" for="in-champion-name">Champion</label>
+            <input id="in-champion-name" class="field" maxlength="14" autocomplete="off" />
+
+            <h2 class="label mt-5">Tables choisies</h2>
+            <div id="tables-chips" class="flex flex-wrap gap-2"></div>
+            <p id="tables-hint" class="mt-2 hidden text-sm font-bold text-rose-400">
+              Choisis au moins une table !
+            </p>
+            <div class="mt-3 flex gap-2">
+              <button type="button" id="tables-all" class="chip chip-off">Toutes</button>
+              <button type="button" id="tables-none" class="chip chip-off">Effacer</button>
+            </div>
+          </div>
+
+          <!-- Manche -->
+          <div class="card">
+            <h2 class="label">La manche</h2>
+            <label class="label" for="in-count">Exercices par manche</label>
+            <select id="in-count" class="field">
+              <option value="5">5 — partie express</option>
+              <option value="10" selected>10 — la classique</option>
+              <option value="15">15 — le long duel</option>
+            </select>
+
+            <label class="label mt-3" for="in-time">Temps du papa par exercice</label>
+            <select id="in-time" class="field">
+              <option value="10">10 s — éclair</option>
+              <option value="15" selected>15 s — normal</option>
+              <option value="20">20 s — tranquille</option>
+              <option value="30">30 s — grand-père</option>
+            </select>
+
+            <label class="label mt-3" for="in-multiplier">Avantage du champion</label>
+            <select id="in-multiplier" class="field">
+              <option value="1.5">× 1,5</option>
+              <option value="2">× 2</option>
+              <option value="3" selected>× 3</option>
+              <option value="4">× 4 — mode dragon</option>
+            </select>
+
+            <p id="handicap-preview" class="mt-3 rounded-xl bg-slate-800 px-4 py-3 text-center font-display text-lg"></p>
+          </div>
+
+          <!-- Règles -->
+          <div class="card">
+            <h2 class="label">Règles bonus</h2>
+            <label class="mt-2 flex items-center gap-3 text-lg">
+              <input type="checkbox" id="opt-bonus-rapide" class="size-5 accent-amber-400" checked />
+              ⚡ <span>Le champion finit dans le temps de papa → <strong>+1 point</strong></span>
+            </label>
+            <label class="mt-3 flex items-center gap-3 text-lg">
+              <input type="checkbox" id="opt-bonus-serie" class="size-5 accent-orange-400" checked />
+              🔥 <span>3 bonnes d'affilée → <strong>+1 point</strong></span>
+            </label>
+            <label class="mt-3 flex items-center gap-3 text-lg">
+              <input type="checkbox" id="opt-malus" class="size-5 accent-rose-400" />
+              💥 <span>Réponse fausse → <strong>−1 point</strong></span>
+            </label>
+
+            <h2 class="label mt-5">Ambiance</h2>
+            <label class="mt-1 flex items-center gap-3 text-lg">
+              <input type="checkbox" id="opt-voice" class="size-5 accent-sky-400" checked />
+              🗣️ <span>Lire les exercices à voix haute</span>
+            </label>
+            <label class="mt-3 flex items-center gap-3 text-lg">
+              <input type="checkbox" id="opt-sound" class="size-5 accent-sky-400" checked />
+              🔊 <span>Sons du jeu</span>
+            </label>
+          </div>
+
+          <!-- Records -->
+          <div class="card flex flex-col">
+            <h2 class="label">Le palmarès</h2>
+            <div id="records-setup" class="flex flex-1 flex-col justify-center gap-2 text-center text-lg text-slate-300"></div>
+          </div>
+        </div>
+
+        <button id="btn-start" class="btn-big bg-emerald-500 text-slate-950 hover:bg-emerald-400">
+          🚀 Lancer le duel
+        </button>
+      </section>
+
+      <!-- ═══════════ ÉCRAN COMPTE À REBOURS ═══════════ -->
+      <section id="screen-countdown" hidden class="flex flex-1 items-center justify-center">
+        <div id="countdown-value" class="font-display text-8xl font-extrabold text-amber-300 md:text-9xl"></div>
+      </section>
+
+      <!-- ═══════════ ÉCRAN MANCHE ═══════════ -->
+      <section id="screen-round" hidden class="flex flex-1 flex-col gap-3 md:flex-row">
+        <div class="flex justify-center md:absolute md:right-6 md:top-6">
+          <button id="btn-pause-round" class="chip chip-off" aria-label="Mettre en pause">⏸️</button>
+        </div>
+
+        <!-- Arène Papa -->
+        <section id="arena-papa" class="arena arena-papa" aria-label="Arène du papa">
+          <div class="flex items-center justify-between gap-2">
+            <h2 id="name-papa" class="font-display text-2xl font-bold text-sky-300"></h2>
+            <span id="budget-papa" class="rounded-full bg-slate-800 px-3 py-1 text-sm font-bold text-slate-300"></span>
+          </div>
+          <div
+            id="ex-papa"
+            class="rounded-2xl bg-slate-950/60 py-6 text-center font-display text-6xl font-extrabold md:text-7xl"
+          ></div>
+          <div>
+            <div class="mb-1 flex justify-between text-sm font-bold text-slate-400">
+              <span id="progress-papa"></span>
+              <span id="time-papa" class="font-display text-lg"></span>
+            </div>
+            <div class="h-3 overflow-hidden rounded-full bg-slate-700">
+              <div id="bar-papa" class="bar-ok h-full rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          <button id="done-papa" class="btn-big bg-sky-400 text-slate-950 hover:bg-sky-300">
+            ✅ J'ai fini !
+          </button>
+          <p id="waiting-papa" hidden class="py-4 text-center font-display text-xl text-slate-400">
+            Terminé ! En attente de l'adversaire… 😌
+          </p>
+          <div
+            id="flash-papa"
+            hidden
+            class="absolute inset-0 flex items-center justify-center bg-slate-950/85 font-display text-6xl font-extrabold text-rose-400"
+          >
+            TEMPS !
+          </div>
+        </section>
+
+        <!-- Arène Champion -->
+        <section id="arena-champion" class="arena arena-champion" aria-label="Arène du champion">
+          <div class="flex items-center justify-between gap-2">
+            <h2 id="name-champion" class="font-display text-2xl font-bold text-amber-300"></h2>
+            <span id="budget-champion" class="rounded-full bg-slate-800 px-3 py-1 text-sm font-bold text-slate-300"></span>
+          </div>
+          <div
+            id="ex-champion"
+            class="rounded-2xl bg-slate-950/60 py-6 text-center font-display text-6xl font-extrabold md:text-7xl"
+          ></div>
+          <div>
+            <div class="mb-1 flex justify-between text-sm font-bold text-slate-400">
+              <span id="progress-champion"></span>
+              <span id="time-champion" class="font-display text-lg"></span>
+            </div>
+            <div class="h-3 overflow-hidden rounded-full bg-slate-700">
+              <div id="bar-champion" class="bar-ok h-full rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          <button id="done-champion" class="btn-big bg-amber-400 text-slate-950 hover:bg-amber-300">
+            ✅ J'ai fini !
+          </button>
+          <p id="waiting-champion" hidden class="py-4 text-center font-display text-xl text-slate-400">
+            Terminé ! En attente de l'adversaire… 😌
+          </p>
+          <div
+            id="flash-champion"
+            hidden
+            class="absolute inset-0 flex items-center justify-center bg-slate-950/85 font-display text-6xl font-extrabold text-rose-400"
+          >
+            TEMPS !
+          </div>
+        </section>
+      </section>
+
+      <!-- ═══════════ ÉCRAN VÉRIFICATION ═══════════ -->
+      <section id="screen-verify" hidden class="flex flex-1 flex-col gap-4">
+        <header class="pt-4 text-center">
+          <h1 id="verify-title" class="font-display text-3xl font-extrabold md:text-4xl"></h1>
+          <p class="mt-1 text-slate-400">Compare avec ton papier, puis marque la réponse !</p>
+        </header>
+
+        <div class="grid flex-1 gap-4 md:grid-cols-2">
+          <!-- Vérif Papa -->
+          <div class="card arena-papa flex flex-col gap-3 border-2">
+            <div class="flex items-center justify-between gap-2">
+              <h3 id="v-name-papa" class="font-display text-2xl font-bold text-sky-300"></h3>
+              <span id="v-meta-papa" class="text-sm font-bold text-slate-400"></span>
+            </div>
+            <div class="py-3 text-center font-display text-5xl font-extrabold md:text-6xl">
+              <span id="v-ex-papa"></span> =
+              <span id="v-question-papa">?</span><span id="v-answer-papa" class="text-emerald-300" hidden></span>
+            </div>
+            <div id="v-popup-papa" class="popup h-8 text-center font-display text-2xl font-bold"></div>
+            <button id="v-reveal-papa" class="btn-ghost w-full">👀 Voir la réponse</button>
+            <div id="v-markers-papa" hidden class="grid grid-cols-2 gap-3">
+              <button id="v-correct-papa" class="btn-big bg-emerald-500 py-4 text-slate-950 hover:bg-emerald-400">
+                ✅ Bonne !
+              </button>
+              <button id="v-wrong-papa" class="btn-big bg-rose-500 py-4 text-white hover:bg-rose-400">
+                ❌ Fausse
+              </button>
+            </div>
+            <p id="v-marked-papa" hidden class="text-center font-display text-xl font-bold"></p>
+          </div>
+
+          <!-- Vérif Champion -->
+          <div class="card arena-champion flex flex-col gap-3 border-2">
+            <div class="flex items-center justify-between gap-2">
+              <h3 id="v-name-champion" class="font-display text-2xl font-bold text-amber-300"></h3>
+              <span id="v-meta-champion" class="text-sm font-bold text-slate-400"></span>
+            </div>
+            <div class="py-3 text-center font-display text-5xl font-extrabold md:text-6xl">
+              <span id="v-ex-champion"></span> =
+              <span id="v-question-champion">?</span><span id="v-answer-champion" class="text-emerald-300" hidden></span>
+            </div>
+            <div id="v-popup-champion" class="popup h-8 text-center font-display text-2xl font-bold"></div>
+            <button id="v-reveal-champion" class="btn-ghost w-full">👀 Voir la réponse</button>
+            <div id="v-markers-champion" hidden class="grid grid-cols-2 gap-3">
+              <button id="v-correct-champion" class="btn-big bg-emerald-500 py-4 text-slate-950 hover:bg-emerald-400">
+                ✅ Bonne !
+              </button>
+              <button id="v-wrong-champion" class="btn-big bg-rose-500 py-4 text-white hover:bg-rose-400">
+                ❌ Fausse
+              </button>
+            </div>
+            <p id="v-marked-champion" hidden class="text-center font-display text-xl font-bold"></p>
+          </div>
+        </div>
+
+        <div class="card flex items-center justify-around text-center">
+          <div>
+            <p id="v-score-papa-name" class="text-sm font-bold uppercase tracking-wide text-slate-400"></p>
+            <p class="font-display text-4xl font-extrabold text-sky-300"><span id="v-score-papa">0</span> pts</p>
+          </div>
+          <div>
+            <p id="v-score-champion-name" class="text-sm font-bold uppercase tracking-wide text-slate-400"></p>
+            <p class="font-display text-4xl font-extrabold text-amber-300"><span id="v-score-champion">0</span> pts</p>
+          </div>
+        </div>
+
+        <button id="btn-verify-next" class="btn-big bg-emerald-500 text-slate-950 hover:bg-emerald-400" disabled>
+          Valide les deux réponses pour continuer
+        </button>
+      </section>
+
+      <!-- ═══════════ ÉCRAN RÉSULTATS ═══════════ -->
+      <section id="screen-results" hidden class="relative flex flex-1 flex-col gap-4">
+        <canvas id="confetti" class="pointer-events-none absolute inset-0 z-10"></canvas>
+
+        <header class="pt-8 text-center">
+          <h1 id="result-banner" class="font-display text-4xl font-extrabold md:text-5xl"></h1>
+          <p id="result-subtitle" class="mt-2 text-lg text-slate-400"></p>
+        </header>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="card arena-papa border-2 text-center">
+            <h2 id="result-name-papa" class="font-display text-2xl font-bold text-sky-300"></h2>
+            <p class="font-display text-6xl font-extrabold"><span id="result-score-papa">0</span></p>
+            <p class="text-sm font-bold uppercase tracking-wide text-slate-400">points</p>
+            <p id="result-stats-papa" class="mt-2 text-slate-300"></p>
+          </div>
+          <div class="card arena-champion border-2 text-center">
+            <h2 id="result-name-champion" class="font-display text-2xl font-bold text-amber-300"></h2>
+            <p class="font-display text-6xl font-extrabold"><span id="result-score-champion">0</span></p>
+            <p class="text-sm font-bold uppercase tracking-wide text-slate-400">points</p>
+            <p id="result-stats-champion" class="mt-2 text-slate-300"></p>
+          </div>
+        </div>
+
+        <div id="records-after" class="card text-center text-lg text-slate-300"></div>
+
+        <div class="mt-auto grid gap-3 sm:grid-cols-2">
+          <button id="btn-rematch" class="btn-big bg-emerald-500 text-slate-950 hover:bg-emerald-400">
+            🔁 Revanche !
+          </button>
+          <button id="btn-setup-end" class="btn-big bg-slate-800 text-slate-100 hover:bg-slate-700">
+            ⚙️ Réglages
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══════════ OVERLAY PAUSE ═══════════ -->
+    <div
+      id="overlay-pause"
+      hidden
+      class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-slate-950/95"
+    >
+      <p class="font-display text-5xl font-extrabold">⏸️ Pause</p>
+      <p class="text-slate-400">Les chronos sont figés.</p>
+      <button id="btn-resume" class="btn-big bg-emerald-500 px-12 text-slate-950 hover:bg-emerald-400">
+        ▶️ Reprendre
+      </button>
+    </div>
+  </body>
+</html>

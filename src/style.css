@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --font-body: "Nunito", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer components {
+  .card {
+    @apply rounded-3xl border border-slate-700 bg-slate-900/70 p-4 shadow-lg shadow-black/30 md:p-6;
+  }
+
+  .arena {
+    @apply relative flex flex-1 flex-col gap-3 overflow-hidden;
+  }
+  .arena-papa {
+    @apply border-sky-400/50;
+  }
+  .arena-champion {
+    @apply border-amber-400/50;
+  }
+
+  .btn-big {
+    @apply w-full rounded-2xl px-5 py-4 font-display text-xl font-bold transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-ghost {
+    @apply rounded-2xl bg-slate-800 px-5 py-3 font-display text-lg font-bold text-slate-100 transition hover:bg-slate-700 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white;
+  }
+
+  .chip {
+    @apply rounded-full border-2 px-4 py-2 font-display text-lg font-bold transition active:scale-95;
+  }
+  .chip-on {
+    @apply border-emerald-400 bg-emerald-500/20 text-emerald-200;
+  }
+  .chip-off {
+    @apply border-slate-600 bg-slate-800 text-slate-400 hover:border-slate-500;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 text-lg font-bold text-slate-100 focus:border-emerald-400 focus:outline-none;
+  }
+
+  .label {
+    @apply mb-1 block text-sm font-extrabold uppercase tracking-wide text-slate-400;
+  }
+
+  .bar-ok {
+    @apply bg-emerald-400;
+  }
+  .bar-warn {
+    @apply bg-amber-400;
+  }
+  .bar-late {
+    @apply bg-rose-500;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-pop {
+  animation: pop-in 0.25s ease-out;
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(8px) scale(0.8);
+    opacity: 0;
+  }
+  25% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-36px) scale(1);
+    opacity: 0;
+  }
+}
+
+.popup {
+  animation: float-up 1s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
